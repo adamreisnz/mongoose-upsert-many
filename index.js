@@ -9,8 +9,14 @@ const matchCriteria = require('./helpers/match-criteria');
 /**
  * Apply bulk upsert helper to schema
  */
-module.exports = function upsertMany(schema) {
+module.exports = function upsertMany(schema, defaultMatchFields) {
   schema.statics.upsertMany = async function(items, matchFields) {
+
+    //Use default match fields if none provided
+    matchFields = matchFields || defaultMatchFields;
+    if (!Array.isArray(matchFields) || matchFields.length === 0) {
+      throw new Error('Match fields must be an array with at least one field');
+    }
 
     //Create bulk operation
     const bulk = this.collection.initializeUnorderedBulkOp();
