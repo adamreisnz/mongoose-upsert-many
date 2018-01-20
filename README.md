@@ -54,7 +54,7 @@ const items = [
 ];
 
 //Fields to match on for upsert condition
-const matchFields = ['foo', 'bar'];
+const matchFields = ['foo', 'bar.nested'];
 
 //Perform bulk operation
 const result = MyModel.upsertMany(items, matchFields);
