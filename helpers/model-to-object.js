@@ -16,9 +16,6 @@ module.exports = function modelToObject(item, Model) {
     versionKey: false,
   });
 
-  //Remove _id as this can't be present in the item when doing bulk upsert
-  delete item._id;
-
   //Return
   return item;
 };
