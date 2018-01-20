@@ -1,0 +1,41 @@
+{
+  "name": "@meanie/mongoose-upsert-many",
+  "description": "A plugin that adds an upsertMany bulk op to Mongoose schemas",
+  "version": "1.0.0",
+  "homepage": "https://github.com/meanie/mongoose-upsert-many",
+  "author": {
+    "name": "Adam Reis",
+    "email": "adam@reis.nz",
+    "url": "https://adam.reis.nz/"
+  },
+  "contributors": [],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meanie/mongoose-upsert-many"
+  },
+  "bugs": {
+    "url": "https://github.com/meanie/mongoose-upsert-many/issues"
+  },
+  "keywords": [
+    "meanie",
+    "mongoose",
+    "bulk",
+    "upsert",
+    "upsertMany",
+    "plugin"
+  ],
+  "engines": {
+    "node": ">=8"
+  },
+  "main": "index.js",
+  "scripts": {
+    "postversion": "git push && git push --tags && npm publish"
+  },
+  "peerDependencies": {
+    "mongoose": "^4.13.9"
+  }
+}
