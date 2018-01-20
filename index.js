@@ -15,7 +15,7 @@ module.exports = function upsertMany(schema) {
     //Use default match fields if none provided
     matchFields = matchFields || schema.options.upsertMatchFields;
     if (!Array.isArray(matchFields) || matchFields.length === 0) {
-      throw new Error('Match fields must be an array with at least one field');
+      matchFields = ['_id'];
     }
 
     //Create bulk operation
