@@ -13,7 +13,7 @@ module.exports = function upsertMany(schema) {
   schema.statics.upsertMany = async function(items, matchFields) {
 
     //Use default match fields if none provided
-    matchFields = matchFields || schema.options.defaultMatchFields;
+    matchFields = matchFields || schema.options.upsertMatchFields;
     if (!Array.isArray(matchFields) || matchFields.length === 0) {
       throw new Error('Match fields must be an array with at least one field');
     }

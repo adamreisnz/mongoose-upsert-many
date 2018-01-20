@@ -68,7 +68,8 @@ to Mongoose models to ensure schema validation is applied, and then converted ba
 to plain, depopulated objects for safe insertion with the bulk operation.
 
 Match fields are fields that are used as match criteria for the upsert operations,
- e.g. in the `find()` portion of the bulk op.
+ e.g. in the `find()` portion of the bulk op. You can also provide default match
+ fields for the whole schema using the option `upsertMatchFields` when defining your schema.
 
 ## Issues & feature requests
 
