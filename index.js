@@ -27,6 +27,9 @@ module.exports = function upsertMany(schema) {
         //Extract match criteria
         const match = matchCriteria(item, matchFields);
 
+        //Can't have _id field when upserting item
+        delete item._id;
+
         //Create upsert
         bulk
           .find(match)
