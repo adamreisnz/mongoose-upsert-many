@@ -57,9 +57,9 @@ const items = [
 const matchFields = ['foo', 'bar.nested'];
 
 //Perform bulk operation
-const result = MyModel.upsertMany(items, matchFields);
+const result = await MyModel.upsertMany(items, matchFields);
 
-//Returns MongoDB bulk result object
+//Returns promise with MongoDB bulk result object
 console.log(result.nUpserted + result.nModified, 'items processed');
 ```
 
