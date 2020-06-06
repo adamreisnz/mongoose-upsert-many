@@ -19,13 +19,18 @@ module.exports = function upsertMany(schema) {
     }
 
     //No defaults setting
-    const noModel = schema.options.upsertNoModel;
     const noDefaults = schema.options.upsertNoDefaults;
+
+    //Ensure model setting
+    let ensureModel = true;
+    if (schema.options.upsertEnsureModel === false) {
+      ensureModel = false;
+    }
 
     //Create bulk operation
     const bulk = this.collection.initializeUnorderedBulkOp();
     items
-      .map(item => noModel ? item : modelToObject(item, this, noDefaults))
+      .map(item => ensureModel ? modelToObject(item, this, noDefaults) : item)
       .forEach(item => {
 
         //Extract match criteria
