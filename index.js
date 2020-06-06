@@ -18,10 +18,14 @@ module.exports = function upsertMany(schema) {
       matchFields = ['_id'];
     }
 
+    //No defaults setting
+    const noModel = schema.options.upsertNoModel;
+    const noDefaults = schema.options.upsertNoDefaults;
+
     //Create bulk operation
     const bulk = this.collection.initializeUnorderedBulkOp();
     items
-      .map(item => modelToObject(item, this))
+      .map(item => noModel ? item : modelToObject(item, this, noDefaults))
       .forEach(item => {
 
         //Extract match criteria
