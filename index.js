@@ -30,6 +30,7 @@ module.exports = function upsertMany(schema) {
 
     //Get config
     const {type} = config;
+    const upsert = true;
 
     //Use default match fields if none provided
     let {matchFields} = config;
@@ -42,7 +43,7 @@ module.exports = function upsertMany(schema) {
       .map(item => {
 
         //Parse item
-        const update = parseItem(item, this, config);
+        item = parseItem(item, this, config);
 
         //Extract match criteria
         const filter = matchCriteria(item, matchFields);
@@ -52,15 +53,31 @@ module.exports = function upsertMany(schema) {
           delete item._id;
         }
 
-        //Create bulk op
-        return {
-          [type]: {
-            filter,
-            update,
-            upsert: true,
-          },
-        };
+        //Check type
+        switch (type) {
 
+          //Insert op
+          case 'insertOne':
+            return {[type]: {document: item}};
+
+          //Update op
+          case 'updateOne':
+          case 'updateMany':
+            return {[type]: {filter, upsert, update: item}};
+
+          //Delete op
+          case 'deleteOne':
+          case 'deleteMany':
+            return {[type]: {filter}};
+
+          //Replace op
+          case 'replaceOne':
+            return {[type]: {filter, upsert, replacement: item}};
+
+          //Unknown
+          default:
+            throw new Error(`Unsupported bulkOp type: ${type}`);
+        }
       });
 
     //Bulk write

@@ -79,14 +79,14 @@ console.log(result.nUpserted + result.nModified, 'items processed');
 
 The following configuration options are available and can be passed either via the schema options or as the last parameter in the `upsertMany` method:
 
-**type**: The bulk op type, defaults to `updateOne` but could also be `replaceOne`, or in theory any of the other methods supported by [bulkWrite](https://docs.mongodb.com/manual/reference/method/db.collection.bulkWrite/).
+**type**: The bulk op type, supports any of the available [bulkWrite](https://docs.mongodb.com/manual/reference/method/db.collection.bulkWrite) ops, although the insert or delete ops will obviously not perform an upsert. Default value is `updateOne`.
 
 **matchFields**: Match fields are fields that are used to create the filter criteria for the upsert operations. For example, passing `['name']` will try to match each item on the value of its `name` property. Default value is `['_id']`.
 
 **ensureModel**: Items you pass in to the plugin can be either mongoose Models or raw data. When this flag is set to `true`, items are always converted
 to Mongoose models to ensure schema validation and any schema defaults are applied. Default value is `false`.
 
-**toObjectConfig**: Configuration to pass to the `toObject` method when converting Mongoose models back to plain items, safe for insertion into the bulk operation. Default value is `{depopulate: true, versionKey: false}`;
+**toObjectConfig**: Configuration to pass to the `toObject` method when converting Mongoose models back to plain items, safe for insertion into the bulk operation. Default value is `{depopulate: true, versionKey: false}`.
 
 ## Migrating from 1.x to 2.x
 Plugin configuration is now passed as a single object via the `upsertMany` key in your schema options. If you used the `upsertMatchFields` setting, you need to replace this with:
