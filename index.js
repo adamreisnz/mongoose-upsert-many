@@ -3,57 +3,67 @@
 /**
  * Load helpers
  */
-const modelToObject = require('./helpers/model-to-object');
+const parseItem = require('./helpers/parse-item');
 const matchCriteria = require('./helpers/match-criteria');
 
 /**
  * Apply bulk upsert helper to schema
  */
 module.exports = function upsertMany(schema) {
-  schema.statics.upsertMany = function(items, matchFields) {
+
+  //Extract schema wide config
+  const defaults = Object.assign({
+    matchFields: ['_id'],
+    type: 'updateOne',
+    ensureModel: false,
+    toObjectConfig: {
+      depopulate: true,
+      versionKey: false,
+    },
+  }, schema.options.upsertMany || {});
+
+  //Create helper
+  schema.statics.upsertMany = function(items, config) {
+
+    //Merge config
+    config = Object.assign({}, defaults, config || {});
+
+    //Get config
+    const {type} = config;
 
     //Use default match fields if none provided
-    matchFields = matchFields || schema.options.upsertMatchFields;
+    let {matchFields} = config;
     if (!Array.isArray(matchFields) || matchFields.length === 0) {
       matchFields = ['_id'];
     }
 
-    //No defaults setting
-    const noDefaults = schema.options.upsertNoDefaults;
+    //Create bulk operations
+    const ops = items
+      .map(item => {
 
-    //Ensure model setting
-    let ensureModel = true;
-    if (schema.options.upsertEnsureModel === false) {
-      ensureModel = false;
-    }
-
-    //Create bulk operation
-    const bulk = this.collection.initializeUnorderedBulkOp();
-    items
-      .map(item => ensureModel ? modelToObject(item, this, noDefaults) : item)
-      .forEach(item => {
+        //Parse item
+        const update = parseItem(item, this, config);
 
         //Extract match criteria
-        const match = matchCriteria(item, matchFields);
+        const filter = matchCriteria(item, matchFields);
 
         //Can't have _id field when upserting item
-        delete item._id;
-
-        //Create upsert
-        bulk
-          .find(match)
-          .upsert()
-          .replaceOne(item);
-      });
-
-    //Execute bulk operation wrapped in promise
-    return new Promise((resolve, reject) => {
-      bulk.execute((error, result) => {
-        if (error) {
-          return reject(error);
+        if (typeof item._id !== 'undefined') {
+          delete item._id;
         }
-        resolve(result);
+
+        //Create bulk op
+        return {
+          [type]: {
+            filter,
+            update,
+            upsert: true,
+          },
+        };
+
       });
-    });
+
+    //Bulk write
+    return this.bulkWrite(ops);
   };
 };

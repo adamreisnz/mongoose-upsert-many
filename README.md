@@ -29,6 +29,7 @@ Setup as a global plugin for all Mongoose schema's:
 const mongoose = require('mongoose');
 const upsertMany = require('@meanie/mongoose-upsert-many');
 
+//Global plugin
 mongoose.plugin(upsertMany);
 ```
 
@@ -39,7 +40,20 @@ const mongoose = require('mongoose');
 const upsertMany = require('@meanie/mongoose-upsert-many');
 const {Schema} = mongoose;
 
-const MySchema = new Schema({});
+//Define schema
+const MySchema = new Schema({
+  //Mongoose schema definition
+}, {
+
+  //Schema-wide configuration for the upsertMany plugin
+  upsertMany: {
+    matchFields: ['field1', 'field2'],
+    type: 'replaceOne',
+    ensureModel: true,
+  },
+});
+
+//Apply plugin
 MySchema.plugin(upsertMany);
 ```
 
@@ -53,23 +67,28 @@ const items = [
   ...
 ];
 
-//Fields to match on for upsert condition
-const matchFields = ['foo', 'bar.nested'];
+//Optionally, overwrite schema-wide configuration
+const config = {matchFields: ['foo', 'bar.nested']};
 
 //Perform bulk operation
-const result = await MyModel.upsertMany(items, matchFields);
+const result = await MyModel.upsertMany(items, config);
 
 //Returns promise with MongoDB bulk result object
 console.log(result.nUpserted + result.nModified, 'items processed');
 ```
 
-Items you pass in can be mongoose Models or raw data, but they are always converted
-to Mongoose models to ensure schema validation is applied, and then converted back
-to plain, depopulated objects for safe insertion with the bulk operation.
+## Configuration
 
-Match fields are fields that are used as match criteria for the upsert operations,
- e.g. in the `find()` portion of the bulk op. You can also provide default match
- fields for the whole schema using the option `upsertMatchFields` when defining your schema.
+The following configuration options are available and can be passed either via the schema options or as the last parameter in the `upsertMany` method:
+
+**type**: The bulk op type, defaults to `updateOne` but could also be `replaceOne`, or in theory any of the other methods supported by [bulkWrite](https://docs.mongodb.com/manual/reference/method/db.collection.bulkWrite/).
+
+**matchFields**: Match fields are fields that are used to create the filter criteria for the upsert operations. For example, passing `['name']` will try to match each item on the value of its `name` property. Default value is `['_id']`.
+
+**ensureModel**: Items you pass in to the plugin can be either mongoose Models or raw data. When this flag is set to `true`, items are always converted
+to Mongoose models to ensure schema validation and any schema defaults are applied.
+
+**toObjectConfig**: Configuration to pass to the `toObject` method when converting Mongoose models back to plain items, safe for insertion into the bulk operation. The default value is `{depopulate: true, versionKey: false}`;
 
 ## Issues & feature requests
 
