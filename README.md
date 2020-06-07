@@ -41,9 +41,7 @@ const upsertMany = require('@meanie/mongoose-upsert-many');
 const {Schema} = mongoose;
 
 //Define schema
-const MySchema = new Schema({
-  //Mongoose schema definition
-}, {
+const MySchema = new Schema(/* ... */}, {
 
   //Schema-wide configuration for the upsertMany plugin
   upsertMany: {
@@ -86,9 +84,42 @@ The following configuration options are available and can be passed either via t
 **matchFields**: Match fields are fields that are used to create the filter criteria for the upsert operations. For example, passing `['name']` will try to match each item on the value of its `name` property. Default value is `['_id']`.
 
 **ensureModel**: Items you pass in to the plugin can be either mongoose Models or raw data. When this flag is set to `true`, items are always converted
-to Mongoose models to ensure schema validation and any schema defaults are applied.
+to Mongoose models to ensure schema validation and any schema defaults are applied. Default value is `false`.
 
-**toObjectConfig**: Configuration to pass to the `toObject` method when converting Mongoose models back to plain items, safe for insertion into the bulk operation. The default value is `{depopulate: true, versionKey: false}`;
+**toObjectConfig**: Configuration to pass to the `toObject` method when converting Mongoose models back to plain items, safe for insertion into the bulk operation. Default value is `{depopulate: true, versionKey: false}`;
+
+## Migrating from 1.x to 2.x
+Plugin configuration is now passed as a single object via the `upsertMany` key in your schema options. If you used the `upsertMatchFields` setting, you need to replace this with:
+
+```js
+const MySchema = new Schema({/* ... */}, {
+  upsertMany: {
+    matchFields: ['field1', 'field2'],
+  },
+});
+```
+
+The plugin will now use [bulkWrite](https://docs.mongodb.com/manual/reference/method/db.collection.bulkWrite/) under the hood, and it will default to the `updateOne` operation, instead of `replaceOne`.
+
+If you need to use `replaceOne`, specify it as the `type` in your configuration:
+
+```js
+const MySchema = new Schema({/* ... */}, {
+  upsertMany: {
+    type: 'replaceOne',
+  },
+});
+```
+
+Lastly, the plugin no longer converts items to Mongoose models by default. If you want to re-enable this to for example include default schema values in your upsert operations, enable this explicitly as follows:
+
+```js
+const MySchema = new Schema({/* ... */}, {
+  upsertMany: {
+    ensureModel: true,
+  },
+});
+```
 
 ## Issues & feature requests
 
