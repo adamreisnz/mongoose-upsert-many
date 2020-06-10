@@ -20,6 +20,7 @@ module.exports = function upsertMany(schema) {
       depopulate: true,
       versionKey: false,
     },
+    ordered: true,
   }, schema.options.upsertMany || {});
 
   //Create helper
@@ -80,7 +81,10 @@ module.exports = function upsertMany(schema) {
         }
       });
 
+    //Retrieve if bulkWrite should be a ordered or unordered write
+    let {ordered} = config;
+
     //Bulk write
-    return this.bulkWrite(ops);
+    return this.bulkWrite(ops, {ordered});
   };
 };

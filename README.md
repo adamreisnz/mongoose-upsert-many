@@ -88,6 +88,8 @@ to Mongoose models to ensure schema validation and any schema defaults are appli
 
 **toObjectConfig**: Configuration to pass to the `toObject` method when converting Mongoose models back to plain items, safe for insertion into the bulk operation. Default value is `{depopulate: true, versionKey: false}`.
 
+**Ordered**: Specifies if the bulk operation should be ordered or unordered. Default value is `true`.
+
 ## Migrating from 1.x to 2.x
 Plugin configuration is now passed as a single object via the `upsertMany` key in your schema options. If you used the `upsertMatchFields` setting, you need to replace this with:
 
