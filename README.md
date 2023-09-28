@@ -27,7 +27,7 @@ import mongoose from 'mongoose'
 import {upsertMany} from '@reis/mongoose-upsert-many'
 
 //Global plugin
-mongoose.plugin(upsertMany);
+mongoose.plugin(upsertMany)
 ```
 
 Or for a specific (sub) schema:
@@ -35,7 +35,7 @@ Or for a specific (sub) schema:
 ```js
 import mongoose from 'mongoose'
 import {upsertMany} from '@reis/mongoose-upsert-many'
-const {Schema} = mongoose;
+const {Schema} = mongoose
 
 //Define schema
 const MySchema = new Schema(/* ... */}, {
@@ -46,10 +46,10 @@ const MySchema = new Schema(/* ... */}, {
     type: 'replaceOne',
     ensureModel: true,
   },
-});
+})
 
 //Apply plugin
-MySchema.plugin(upsertMany);
+MySchema.plugin(upsertMany)
 ```
 
 This plugin will expose a static `upsertMany` method on your models which you
@@ -60,16 +60,16 @@ can use to perform bulk upsert operations:
 //Large amount of items
 const items = [
   ...
-];
+]
 
 //Optionally, overwrite schema-wide configuration
-const config = {matchFields: ['foo', 'bar.nested']};
+const config = {matchFields: ['foo', 'bar.nested']}
 
 //Perform bulk operation
-const result = await MyModel.upsertMany(items, config);
+const result = await MyModel.upsertMany(items, config)
 
 //Returns promise with MongoDB bulk result object
-console.log(result.nUpserted + result.nModified, 'items processed');
+console.log(result.nUpserted + result.nModified, 'items processed')
 ```
 
 ## Configuration
